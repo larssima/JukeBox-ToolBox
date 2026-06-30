@@ -8,12 +8,33 @@ import { renderCardToDataURL } from './utils/renderCard.js'
 import { DEFAULT_FONT_ID, getAllFonts, getLastFontId, rememberLastFontId, restoreCustomFonts } from './data/fonts.js'
 
 const SAVED_CARDS_KEY = 'jukebox-toolbox:saved-cards'
+const LAST_SCALES_KEY = 'jukebox-toolbox:last-scales'
+
+function getLastScales() {
+  try {
+    const raw = localStorage.getItem(LAST_SCALES_KEY)
+    return raw ? JSON.parse(raw) : {}
+  } catch {
+    return {}
+  }
+}
 
 let nextId = 1
 const lastFontId = ref(getLastFontId() || DEFAULT_FONT_ID)
+const lastScales = getLastScales()
 
 function blankCard() {
-  return { id: null, templateId: 'red', fontId: lastFontId.value, artist: '', songA: '', songB: '' }
+  return {
+    id: null,
+    templateId: 'red',
+    fontId: lastFontId.value,
+    artist: '',
+    songA: '',
+    songB: '',
+    songAScale: lastScales.songAScale ?? 1,
+    artistScale: lastScales.artistScale ?? 1,
+    songBScale: lastScales.songBScale ?? 1,
+  }
 }
 
 const currentCard = reactive(blankCard())
@@ -26,6 +47,18 @@ watch(
   (id) => {
     lastFontId.value = id
     rememberLastFontId(id)
+  },
+)
+
+watch(
+  () => [currentCard.songAScale, currentCard.artistScale, currentCard.songBScale],
+  ([songAScale, artistScale, songBScale]) => {
+    lastScales.songAScale = songAScale
+    lastScales.artistScale = artistScale
+    lastScales.songBScale = songBScale
+    try {
+      localStorage.setItem(LAST_SCALES_KEY, JSON.stringify({ songAScale, artistScale, songBScale }))
+    } catch {}
   },
 )
 
@@ -82,7 +115,8 @@ function addOrUpdateCard() {
 function editCard(id) {
   const card = savedCards.value.find((c) => c.id === id)
   if (!card) return
-  Object.assign(currentCard, card)
+  // blankCard() backfills fields (e.g. *Scale) that older saved cards may not have
+  Object.assign(currentCard, blankCard(), card)
   editingId.value = id
 }
 

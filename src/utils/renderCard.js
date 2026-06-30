@@ -16,7 +16,7 @@ function loadImage(src) {
   return p
 }
 
-function fitAndDraw(ctx, text, zone, canvasW, canvasH, fontFamily, weight, color) {
+function fitAndDraw(ctx, text, zone, canvasW, canvasH, fontFamily, weight, color, scale = 1) {
   if (!text) return
   const upper = text.toUpperCase()
   const maxWidth = (zone.xMax - zone.xMin) * canvasW
@@ -24,7 +24,8 @@ function fitAndDraw(ctx, text, zone, canvasW, canvasH, fontFamily, weight, color
   const cx = ((zone.xMin + zone.xMax) / 2) * canvasW
   const cy = zone.yCenter * canvasH
 
-  let fontSize = Math.floor(zoneHeight * 0.78)
+  // scale adjusts the starting size; the height cap keeps it from spilling into neighboring zones
+  let fontSize = Math.floor(Math.min(zoneHeight * 0.78 * scale, zoneHeight * 0.95))
   const minFontSize = 6
   ctx.textAlign = 'center'
   ctx.textBaseline = 'middle'
@@ -56,9 +57,9 @@ export async function drawCard(canvas, card, width = 900) {
 
   const textColor = '#1a1a1a'
   const weight = font.weight ?? 700
-  fitAndDraw(ctx, card.songA, template.zones.top, w, h, font.family, weight, textColor)
-  fitAndDraw(ctx, card.artist, template.zones.middle, w, h, font.family, weight, textColor)
-  fitAndDraw(ctx, card.songB, template.zones.bottom, w, h, font.family, weight, textColor)
+  fitAndDraw(ctx, card.songA, template.zones.top, w, h, font.family, weight, textColor, card.songAScale ?? 1)
+  fitAndDraw(ctx, card.artist, template.zones.middle, w, h, font.family, weight, textColor, card.artistScale ?? 1)
+  fitAndDraw(ctx, card.songB, template.zones.bottom, w, h, font.family, weight, textColor, card.songBScale ?? 1)
 }
 
 // Renders a card off-screen and returns a PNG data URL, for downloads/export.

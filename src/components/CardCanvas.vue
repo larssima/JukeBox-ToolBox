@@ -16,7 +16,7 @@ async function render() {
 
 onMounted(render)
 watch(
-  () => [props.card.templateId, props.card.fontId, props.card.artist, props.card.songA, props.card.songB, props.width],
+  () => [props.card.templateId, props.card.fontId, props.card.artist, props.card.songA, props.card.songB, props.card.songAScale, props.card.artistScale, props.card.songBScale, props.width],
   render,
 )
 

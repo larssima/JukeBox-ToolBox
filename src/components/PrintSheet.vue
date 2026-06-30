@@ -1,12 +1,13 @@
 <script setup>
-import { ref, watch, onMounted } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { renderCardToDataURL } from '../utils/renderCard.js'
 
 const props = defineProps({
   cards: { type: Array, required: true },
 })
 
-const cardWidthMm = ref(90)
+const cardWidthMm = ref(76)
+const cardHeightMm = computed(() => (cardWidthMm.value / 3).toFixed(1))
 const images = ref([]) // [{ id, url }]
 
 async function refresh() {
@@ -27,9 +28,10 @@ function print() {
   <div class="print-sheet">
     <div class="controls no-print">
       <label>
-        Card width (mm)
+        Width (mm)
         <input type="number" v-model.number="cardWidthMm" min="30" max="190" step="1" />
       </label>
+      <span class="dimensions">× {{ cardHeightMm }} mm</span>
       <button type="button" @click="print" :disabled="images.length === 0">Print sheet</button>
       <span class="hint">Sheet is A4. Cut along the dashed lines.</span>
     </div>
@@ -89,6 +91,11 @@ function print() {
 .controls button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+.dimensions {
+  color: #555;
+  font-size: 0.85rem;
 }
 
 .hint {

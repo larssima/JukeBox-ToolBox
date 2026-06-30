@@ -1,6 +1,7 @@
 <script setup>
 import TemplateSelector from './TemplateSelector.vue'
 import FontSelector from './FontSelector.vue'
+import TitleField from './TitleField.vue'
 
 const card = defineModel({ type: Object, required: true })
 </script>
@@ -17,20 +18,29 @@ const card = defineModel({ type: Object, required: true })
       <FontSelector v-model="card.fontId" />
     </label>
 
-    <label class="field">
-      <span>Side A title (top)</span>
-      <input v-model="card.songA" type="text" placeholder="e.g. Twisting The Night Away" maxlength="40" />
-    </label>
+    <TitleField
+      label="Side A title (top)"
+      placeholder="e.g. Twisting The Night Away"
+      :maxlength="40"
+      v-model:text="card.songA"
+      v-model:scale="card.songAScale"
+    />
 
-    <label class="field">
-      <span>Artist (middle)</span>
-      <input v-model="card.artist" type="text" placeholder="e.g. Sam Cooke" maxlength="30" />
-    </label>
+    <TitleField
+      label="Artist (middle)"
+      placeholder="e.g. Sam Cooke"
+      :maxlength="30"
+      v-model:text="card.artist"
+      v-model:scale="card.artistScale"
+    />
 
-    <label class="field">
-      <span>Side B title (bottom)</span>
-      <input v-model="card.songB" type="text" placeholder="e.g. Chain Gang" maxlength="40" />
-    </label>
+    <TitleField
+      label="Side B title (bottom)"
+      placeholder="e.g. Chain Gang"
+      :maxlength="40"
+      v-model:text="card.songB"
+      v-model:scale="card.songBScale"
+    />
   </div>
 </template>
 
